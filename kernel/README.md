@@ -1,8 +1,8 @@
 ## Kernel images
 
-The builder provides firecracker-compatible images for 2 kernel versions,
-`5.10.x` and `4.19.x`, and cloudhypervisor-compatible images for 1 kernel
-version, `5.12`.
+The builder provides firecracker-compatible images for 3 kernel versions
+(`4.19.x`, `5.2.x`, `5.10.x`), and cloudhypervisor-compatible images for 2
+kernel versions (`5.12`, `5.15.12`), using the [cloud-hypervisor/linux](https://github.com/cloud-hypervisor/linux) branches.
 
 These images are extremely minimal. `kernel-bin` is built from `SCRATCH` and
 only contains a kernel binary. `kernel-modules`, also built from `SCRATCH`,
@@ -26,18 +26,18 @@ creating the eventually used `bin` and `module` images is:
 The resulting images can be added to Microvm specs like so:
 
 ```
-ghcr.io/weaveworks-liquidmetal/firecracker-kernel-bin:X.X.X
-ghcr.io/weaveworks-liquidmetal/firecracker-kernel-modules:X.X.X
+ghcr.io/liquidmetal-dev/firecracker-kernel-bin-amd64:X.X.X
+ghcr.io/liquidmetal-dev/firecracker-kernel-modules-amd64:X.X.X
 
-ghcr.io/weaveworks-liquidmetal/cloudhypervisor-kernel-bin:X.X.X
-ghcr.io/weaveworks-liquidmetal/cloudhypervisor-kernel-modules:X.X.X
+ghcr.io/liquidmetal-dev/cloudhypervisor-kernel-bin-amd64:X.X.X
+ghcr.io/liquidmetal-dev/cloudhypervisor-kernel-modules-amd64:X.X.X
 ```
 
 For platforms using versions older than [Flintlock `0.5.0`][fl5] and [CAPMVM `0.8.0`][cap8]
-use the following legacy image for **firecracker** microvms:
+use the following legacy image for **firecracker** microvms (amd64):
 
 ```
-ghcr.io/weaveworks-liquidmetal/flintlock-kernel:X.X.X
+ghcr.io/liquidmetal-dev/flintlock-kernel:X.X.X
 ```
 
 **Note** the `filename` locations for each of the kernels:
@@ -63,6 +63,12 @@ You should not need to manually publish new images to the `ghcr` account.
 
 Your new version will be automatically published.
 
+You can also trigger a build and release manually from the Actions tab: **Build and release kernel images** → "Run workflow".
+
+### Kubernetes compatibility (e.g. 1.34.x)
+
+For running Kubernetes 1.34.x (and similar) inside microVMs, use **5.10.77** or **5.2.21** (Firecracker) or **5.12** or **5.15.12** (Cloud Hypervisor). These meet Kubernetes kernel requirements (PSI 4.20+, cgroup v2 5.8+, runc freezer 5.2+). Kernel **4.19.215** is below the recommended minimums and is not recommended for current Kubernetes versions.
+
 ## Local development and custom images
 
 _Note that Firecracker only supports `5.10` and `4.19` kernels._
@@ -86,6 +92,12 @@ _Note that Firecracker only supports `5.10` and `4.19` kernels._
 1. Run `make build-fc` or `make build-ch` to build the images and `make push-fc`
 	or `make push-ch` to push the images to your registry
 
-[fl5]: https://github.com/weaveworks-liquidmetal/flintlock/releases/tag/v0.5.0
-[cap8]: https://github.com/weaveworks-liquidmetal/cluster-api-provider-microvm/releases/tag/v0.8.0
-[lm-docs]: https://github.com/weaveworks-liquidmetal/site/blob/main/docs/guides/images.md
+### Build pipeline notes
+
+- **Firecracker base** clones the kernel from kernel.org over HTTPS (CI-friendly).
+- **Builder** image is Ubuntu 20.04; consider moving to 22.04 when updating for long-term support.
+- If a kernel build fails, check that a config file exists in `firecracker/configs/` or `cloud-hypervisor/configs/` for the exact version (e.g. `linux-x86_64-5.10.77.config`).
+
+[fl5]: https://github.com/liquidmetal-dev/flintlock/releases/tag/v0.5.0
+[cap8]: https://github.com/liquidmetal-dev/cluster-api-provider-microvm/releases/tag/v0.8.0
+[lm-docs]: https://github.com/liquidmetal-dev/site/blob/main/docs/guides/images.md

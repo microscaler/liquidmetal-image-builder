@@ -2,20 +2,20 @@
 
 DOCKER := docker
 
-REGISTRY?=ghcr.io/weaveworks-liquidmetal
+REGISTRY?=ghcr.io/liquidmetal-dev
 
 BUILDER_IMAGE_NAME?=$(REGISTRY)/kernel-builder
 
-FC_BASE_IMAGE_NAME?=$(REGISTRY)/firecracker-kernel
-FC_BIN_IMAGE_NAME?=$(REGISTRY)/firecracker-kernel-bin
-FC_MOD_IMAGE_NAME?=$(REGISTRY)/firecracker-kernel-modules
+FC_BASE_IMAGE_NAME?=$(REGISTRY)/firecracker-kernel-amd64
+FC_BIN_IMAGE_NAME?=$(REGISTRY)/firecracker-kernel-bin-amd64
+FC_MOD_IMAGE_NAME?=$(REGISTRY)/firecracker-kernel-modules-amd64
 
-CH_BASE_IMAGE_NAME?=$(REGISTRY)/cloudhypervisor-kernel
-CH_BIN_IMAGE_NAME?=$(REGISTRY)/cloudhypervisor-kernel-bin
-CH_MOD_IMAGE_NAME?=$(REGISTRY)/cloudhypervisor-kernel-modules
+CH_BASE_IMAGE_NAME?=$(REGISTRY)/cloudhypervisor-kernel-amd64
+CH_BIN_IMAGE_NAME?=$(REGISTRY)/cloudhypervisor-kernel-bin-amd64
+CH_MOD_IMAGE_NAME?=$(REGISTRY)/cloudhypervisor-kernel-modules-amd64
 
-FC_KERNEL_VERSIONS ?= 4.19.215 5.10.77 # If you update this list, please remember to update the matrix in the kernel-images.yml github action!
-CH_KERNEL_VERSIONS ?= 5.12 # If you update this list, please remember to update the matrix in the kernel-images.yml github action!
+FC_KERNEL_VERSIONS ?= 4.19.215 5.2.21 5.10.77 # If you update this list, please remember to update the matrix in the kernel-images.yml github action!
+CH_KERNEL_VERSIONS ?= 5.12 5.15.12 # If you update this list, please remember to update the matrix in the kernel-images.yml github action!
 
 ##@ Build
 

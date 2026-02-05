@@ -17,8 +17,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [ 4.19.215, 5.10.77 ]
+        version: [ 4.19.215, 5.2.21, 5.10.77 ]
     env:
+      REGISTRY: ghcr.io/${{ vars.REGISTRY_OWNER || github.repository_owner }}
       FC_KERNEL_VERSIONS: ${{ matrix.version }}
     steps:
       - uses: actions/checkout@v2
@@ -40,8 +41,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [ 5.12 ]
+        version: [ 5.12, 5.15.12 ]
     env:
+      REGISTRY: ghcr.io/${{ vars.REGISTRY_OWNER || github.repository_owner }}
       CH_KERNEL_VERSIONS: ${{ matrix.version }}
     steps:
       - uses: actions/checkout@v2

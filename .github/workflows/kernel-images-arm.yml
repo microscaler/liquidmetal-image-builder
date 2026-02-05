@@ -1,0 +1,35 @@
+name: Build and release kernel images (ARM, experimental)
+
+on:
+  push:
+    paths:
+      - 'experimental/arm/kernel/**'
+    branches: [main]
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: experimental/arm/kernel
+
+jobs:
+  release-arm-firecracker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      REGISTRY: ghcr.io/${{ vars.REGISTRY_OWNER || github.repository_owner }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push ARM kernel images
+        run: make

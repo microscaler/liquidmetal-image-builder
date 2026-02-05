@@ -2,15 +2,15 @@
 
 DOCKER := docker
 
-REGISTRY?=ghcr.io/weaveworks-liquidmetal
+REGISTRY?=ghcr.io/liquidmetal-dev
 
-BUILDER_IMAGE_NAME?=$(REGISTRY)/kernel-builder-arm
+BUILDER_IMAGE_NAME?=$(REGISTRY)/kernel-builder-arm64
 
-FC_BASE_IMAGE_NAME?=$(REGISTRY)/firecracker-kernel-arm
-FC_BIN_IMAGE_NAME?=$(REGISTRY)/firecracker-kernel-bin-arm
-FC_MOD_IMAGE_NAME?=$(REGISTRY)/firecracker-kernel-modules-arm
+FC_BASE_IMAGE_NAME?=$(REGISTRY)/firecracker-kernel-arm64
+FC_BIN_IMAGE_NAME?=$(REGISTRY)/firecracker-kernel-bin-arm64
+FC_MOD_IMAGE_NAME?=$(REGISTRY)/firecracker-kernel-modules-arm64
 
-FC_KERNEL_VERSIONS ?= 5.10.77 # If you update this list, please remember to update the matrix in the kernel-images.yml github action!
+FC_KERNEL_VERSIONS ?= 5.2.21 5.10.77 # If you update this list, please remember to update the matrix in the kernel-images.yml github action!
 
 ##@ Build
 
