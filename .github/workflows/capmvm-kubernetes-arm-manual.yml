@@ -1,4 +1,4 @@
-name: CAPMVMV - Build and release
+name: CAPMVM (ARM, experimental) - Build and release
 
 on:
   workflow_dispatch:
@@ -30,25 +30,30 @@ permissions:
 
 defaults:
   run:
-    working-directory: capmvm/kubernetes
+    working-directory: experimental/arm/capmvm/kubernetes
 
 jobs:
   buildandpublish:
-    name: Build and publish CAPMVM
+    name: Build and publish CAPMVM (ARM64)
     runs-on: ubuntu-latest
     env:
-      # Push to this repo's GHCR (e.g. ghcr.io/myownusername on a fork). Set vars.REGISTRY_OWNER to override.
       REGISTRY: ghcr.io/${{ vars.REGISTRY_OWNER || github.repository_owner }}
     steps:
-      - name: checkout code
-        uses: actions/checkout@v5
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       - name: Login to container registry
-        uses: docker/login-action@v1.10.0
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push
+      - name: Build and push ARM image
         run: |
-          UBUNTU_VERSION=${{ inputs.ubuntu_version }} CONTAINERD_VERSION=${{ inputs.containerd_version }} K8S_MAJOR_MINOR=${{ inputs.k8s_version }} K8S_FULL_VERSION=${{ inputs.k8s_version }}.${{ inputs.k8s_patch_version }} make build
-          UBUNTU_VERSION=${{ inputs.ubuntu_version }} CONTAINERD_VERSION=${{ inputs.containerd_version }} K8S_MAJOR_MINOR=${{ inputs.k8s_version }} K8S_FULL_VERSION=${{ inputs.k8s_version }}.${{ inputs.k8s_patch_version }} make push
+          RELEASE_VERSIONS=${{ inputs.k8s_version }}.${{ inputs.k8s_patch_version }} \
+          CONTAINERD_VERSION=${{ inputs.containerd_version }} \
+          UBUNTU_VERSION=${{ inputs.ubuntu_version }} \
+          make build-and-push
