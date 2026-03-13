@@ -1,4 +1,4 @@
-ARG IMAGE_NAME
+ARG IMAGE_NAME=ghcr.io/liquidmetal-dev/kernel-builder
 FROM ${IMAGE_NAME}:dev AS builder
 
 ENV SRC_DIR=/usr/src            \
