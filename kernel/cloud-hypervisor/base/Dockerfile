@@ -8,7 +8,8 @@ ENV SRC_DIR=/usr/src            \
     LINUX_REPO_URL=https://github.com/cloud-hypervisor/linux.git
 
 ARG KERNEL_VERSION
-ARG ARCH=amd64
+ARG CONFIG_ARCH=amd64
+ARG KERNEL_ARCH=x86_64
 ARG CONFIG_FILE
 
 RUN mkdir -p ${SRC_DIR} ${DIST_DIR} && \
@@ -17,7 +18,10 @@ RUN mkdir -p ${SRC_DIR} ${DIST_DIR} && \
 
 WORKDIR ${LINUX_DIR}
 
-COPY cloud-hypervisor/configs/${ARCH}/${CONFIG_FILE} .config
+COPY cloud-hypervisor/configs/${CONFIG_ARCH}/${CONFIG_FILE} .config
+
+# Linux kernel Makefile expects ARCH=x86_64 (not amd64).
+ENV ARCH=${KERNEL_ARCH}
 
 RUN make LOCALVERSION= olddefconfig
 RUN make LOCALVERSION= -j `nproc` all

@@ -24,6 +24,13 @@ else
 FC_CONFIG_SUFFIX := arm64
 endif
 
+# Kernel ARCH for Linux make (arch/x86_64 or arch/arm64). Must not pass our ARCH=amd64 to kernel make.
+ifeq ($(ARCH),amd64)
+KERNEL_ARCH := x86_64
+else
+KERNEL_ARCH := arm64
+endif
+
 FC_KERNEL_VERSIONS ?= 4.19.215 5.10.77 6.1.102 # If you update this list, please remember to update the matrix in the kernel-images.yml github action!
 CH_KERNEL_VERSIONS ?= 5.12 5.15.12 # If you update this list, please remember to update the matrix in the kernel-images.yml github action!
 
@@ -53,7 +60,8 @@ build-fc-%: builder
 base-fc-%: ## Build the Firecracker base image for current ARCH
 	$(DOCKER_BUILD_CMD) $(DOCKER_BUILD_OPTS) -t $(FC_BASE_IMAGE_NAME):$* \
 		--build-arg KERNEL_VERSION=$* \
-		--build-arg ARCH=$(ARCH) \
+		--build-arg CONFIG_ARCH=$(ARCH) \
+		--build-arg KERNEL_ARCH=$(KERNEL_ARCH) \
 		--build-arg CONFIG_FILE=linux-$(FC_CONFIG_SUFFIX)-$*.config \
 		--build-arg IMAGE_NAME=$(BUILDER_IMAGE_NAME) \
 		-f firecracker/base/Dockerfile .
@@ -74,7 +82,8 @@ build-ch-%: builder
 base-ch-%: ## Build the Cloud Hypervisor base image
 	$(DOCKER_BUILD_CMD) $(DOCKER_BUILD_OPTS) -t $(CH_BASE_IMAGE_NAME):$* \
 		--build-arg KERNEL_VERSION=$* \
-		--build-arg ARCH=$(ARCH) \
+		--build-arg CONFIG_ARCH=$(ARCH) \
+		--build-arg KERNEL_ARCH=$(KERNEL_ARCH) \
 		--build-arg CONFIG_FILE=linux-x86_64-$*.config \
 		--build-arg IMAGE_NAME=$(BUILDER_IMAGE_NAME) \
 		-f cloud-hypervisor/base/Dockerfile .
